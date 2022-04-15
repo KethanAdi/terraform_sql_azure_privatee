@@ -26,6 +26,9 @@ az account list
 Tenant id
 az account tenant list
 
+nc -zvw10  10.50.2.4  22
+nmap 10.50.2.2 -Pn -p 144
+
 
 Create Service Principal
 az ad sp create-for-rbac --name "MyApp" --role contributor --scopes /subscriptions/{SubID}/resourceGroups/{ResourceGroup1} 
