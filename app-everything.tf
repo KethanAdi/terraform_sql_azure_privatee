@@ -1,3 +1,61 @@
+
+###########################
+## Azure Provider - Main ##
+###########################
+
+# Define Terraform provider
+terraform {
+  required_version = ">= 0.13"
+}
+
+# Configure the Azure provider
+provider "azurerm" {
+  environment = "public"
+  version     = ">= 2.7.0"
+  features {}
+  #subscription_id = var.azure-subscription-id
+  #client_id       = var.azure-client-id
+  #client_secret   = var.azure-client-secret
+  #tenant_id       = var.azure-tenant-id
+}
+
+
+####################
+## Network - Main ##
+####################
+
+# Create a resource group
+resource "azurerm_resource_group" "kopi-rg" {
+  name     = var.resource_group_name
+  location = var.location
+
+  tags = {
+    environment = var.environment
+  }
+}
+
+# Create the VNET
+resource "azurerm_virtual_network" "kopi-vnet" {
+  name                = "${var.prefix}-${var.environment}-${var.app_name}-vnet"
+  address_space       = [var.kopi-vnet-cidr]
+  location            = azurerm_resource_group.kopi-rg.location
+  resource_group_name = azurerm_resource_group.kopi-rg.name
+
+  tags = {
+    environment = var.environment
+  }
+}
+
+# Create a DB subnet
+resource "azurerm_subnet" "kopi-db-subnet" {
+  name                 = "${var.prefix}-${var.environment}-${var.app_name}-db-subnet"
+  address_prefixes     = [var.kopi-db-subnet-cidr]
+  virtual_network_name = azurerm_virtual_network.kopi-vnet.name
+  resource_group_name  = azurerm_resource_group.kopi-rg.name
+  enforce_private_link_endpoint_network_policies = true
+}
+
+
 ###################
 ## Network - DNS ##
 ###################
@@ -71,60 +129,6 @@ resource "azurerm_private_dns_zone_virtual_network_link" "dns-zone-to-vnet-link"
 }
 
 
-####################
-## Network - Main ##
-####################
-
-# Create a resource group
-resource "azurerm_resource_group" "kopi-rg" {
-  name     = var.resource_group_name
-  location = var.location
-
-  tags = {
-    environment = var.environment
-  }
-}
-
-# Create the VNET
-resource "azurerm_virtual_network" "kopi-vnet" {
-  name                = "${var.prefix}-${var.environment}-${var.app_name}-vnet"
-  address_space       = [var.kopi-vnet-cidr]
-  location            = azurerm_resource_group.kopi-rg.location
-  resource_group_name = azurerm_resource_group.kopi-rg.name
-
-  tags = {
-    environment = var.environment
-  }
-}
-
-# Create a DB subnet
-resource "azurerm_subnet" "kopi-db-subnet" {
-  name                 = "${var.prefix}-${var.environment}-${var.app_name}-db-subnet"
-  address_prefixes     = [var.kopi-db-subnet-cidr]
-  virtual_network_name = azurerm_virtual_network.kopi-vnet.name
-  resource_group_name  = azurerm_resource_group.kopi-rg.name
-  enforce_private_link_endpoint_network_policies = true
-}
-
-###########################
-## Azure Provider - Main ##
-###########################
-
-# Define Terraform provider
-terraform {
-  required_version = ">= 0.13"
-}
-
-# Configure the Azure provider
-provider "azurerm" {
-  environment = "public"
-  version     = ">= 2.7.0"
-  features {}
-  #subscription_id = var.azure-subscription-id
-  #client_id       = var.azure-client-id
-  #client_secret   = var.azure-client-secret
-  #tenant_id       = var.azure-tenant-id
-}
 #######################
 ## SQL Server - Main ##
 #######################
