@@ -24,7 +24,6 @@ terraform init -backend-config=backend.conf
 terraform plan
 terraform apply
 
-
 Subscription id
 az account list
 
