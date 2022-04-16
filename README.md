@@ -19,6 +19,11 @@ az logout
 ![image](https://user-images.githubusercontent.com/102666849/163563286-fd5ad487-5809-4dbf-8871-c47c4e24d41f.png)
 
 
+terraform init
+terraform init -backend-config=backend.conf
+terraform plan
+terraform apply
+
 
 Subscription id
 az account list
